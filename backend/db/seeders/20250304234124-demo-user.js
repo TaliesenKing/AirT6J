@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await User.bulkCreate([
+    await queryInterface.bulkInsert('Users', [
       {
         email: 'demo@user.io',
         username: 'Demo-lition',
@@ -26,14 +26,15 @@ module.exports = {
         username: 'FakeUser2',
         hashedPassword: bcrypt.hashSync('password3')
       }
-    ], { validate: true });
+    ]); // This tells sequelize validations or to not skip validation checks (no longer there change to bulkInsert FROM bulkCreate)
   },
 
   async down (queryInterface, Sequelize) {
-    options.tableName = 'Users';
-    const Op = Sequelize.Op;
-    return queryInterface.bulkDelete(options, {
-      username: { [Op.in]: ['Demo-lition', 'FakeUser1', 'FakeUser2'] }
-    }, {});
+    await queryInterface.bulkDelete('Users', null, {});
+    // options.tableName = 'Users';
+    // const Op = Sequelize.Op;
+    // return queryInterface.bulkDelete(options, {
+    //   username: { [Op.in]: ['Demo-lition', 'FakeUser1', 'FakeUser2'] }
+    // }, {});
   }
 };

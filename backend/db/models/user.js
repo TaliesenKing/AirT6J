@@ -33,18 +33,18 @@ module.exports = (sequelize, DataTypes) => {
           isEmail: true,
         },
       },
-      firstName: {  // New field
+      firstName: {  
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          len: [2, 50], // adjust the length as needed
+          len: [2, 50], 
         },
       },
-      lastName: {  // New field
+      lastName: {  
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          len: [2, 50], // adjust the length as needed
+          len: [2, 50], 
         },
       },
       hashedPassword: {

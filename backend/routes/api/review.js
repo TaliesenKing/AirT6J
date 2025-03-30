@@ -5,6 +5,8 @@ const { handleValidationErrors } = require('../../utils/validation');
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { User } = require('../../db/models');
 const router = express.Router();
+
+
 //#1 we need a GET request that returns all reviews by current user
 
 router.get('/reviews', requireAuth, async (req, res) => {

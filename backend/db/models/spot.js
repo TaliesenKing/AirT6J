@@ -5,15 +5,22 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Spot extends Model {
     static associate(models) {
-      // define association here
+      // Many-to-one: A spot belongs to a user (owner)
       Spot.belongsTo(models.User, {
-        foreignKey: 'ownerId', 
-        as: 'Owner', 
-        onDelete: 'CASCADE'
+        foreignKey: 'ownerId',
+        onDelete: 'CASCADE',  // Ensures when a user is deleted, their spot is also deleted
       });
+
+      // One-to-many: A spot can have many reviews
+      Spot.hasMany(models.Review, {
+        foreignKey: 'spotId',
+        onDelete: 'CASCADE',  // Ensures when a spot is deleted, its reviews are also deleted
+      });
+
+      // One-to-many: A spot can have many spot images
       Spot.hasMany(models.SpotImage, {
         foreignKey: 'spotId',
-        onDelete: 'CASCADE',  // Ensures images get deleted when a Spot is deleted
+        onDelete: 'CASCADE',  // Ensures when a spot is deleted, its images are also deleted
       });
     }
   }
@@ -38,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
     city: {
       type: DataTypes.STRING,
       allowNull: false,
-  },
+    },
     state: {
       type: DataTypes.STRING,
       allowNull: false,

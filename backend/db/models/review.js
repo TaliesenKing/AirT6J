@@ -15,19 +15,19 @@ module.exports = (sequelize) => {
       // A Review belongs to a User through userId
       Review.belongsTo(models.User, {
         foreignKey: 'userId',
-        onDelete: 'CASCADE',  // Cascade delete when a User is deleted
+        // onDelete: 'CASCADE',  // Cascade delete when a User is deleted
       });
 
       // A Review belongs to a Spot through spotId
       Review.belongsTo(models.Spot, {
         foreignKey: 'spotId',
-        onDelete: 'CASCADE',  // Cascade delete when a Spot is deleted
+        // onDelete: 'CASCADE',  // Cascade delete when a Spot is deleted
       });
 
       // A Review has many ReviewImages through reviewId
       Review.hasMany(models.ReviewImage, {
         foreignKey: 'reviewId',
-        onDelete: 'CASCADE',  // Cascade delete when a Review is deleted
+        // onDelete: 'CASCADE',  // Cascade delete when a Review is deleted
       });
     }
   }

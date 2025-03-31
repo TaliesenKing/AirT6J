@@ -1,5 +1,5 @@
 'use strict';
-
+console.log("Inserting Reviews");
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkInsert('Reviews', [

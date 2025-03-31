@@ -1,5 +1,5 @@
 'use strict';
-
+console.log("Inserting Spots");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -46,20 +46,20 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      {
-        ownerId: 4,
-        address: '101 Forest Ln',
-        city: 'Portland',
-        state: 'OR',
-        country: 'USA',
-        lat: 45.5152,
-        lng: -122.6784,
-        name: 'Forest Cabin',
-        description: 'A rustic cabin nestled in the woods. A perfect getaway for those looking to escape the hustle and bustle.',
-        price: 180.00,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+      // {
+      //   ownerId: 4,
+      //   address: '101 Forest Ln',
+      //   city: 'Portland',
+      //   state: 'OR',
+      //   country: 'USA',
+      //   lat: 45.5152,
+      //   lng: -122.6784,
+      //   name: 'Forest Cabin',
+      //   description: 'A rustic cabin nestled in the woods. A perfect getaway for those looking to escape the hustle and bustle.',
+      //   price: 180.00,
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      // }
     ]);
   },
 

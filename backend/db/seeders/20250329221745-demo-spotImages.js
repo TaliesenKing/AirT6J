@@ -1,4 +1,5 @@
 'use strict';
+console.log("Inserting Spotimages");
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -31,14 +32,14 @@ module.exports = {
         updatedAt: new Date(),
       },
 
-      // Spot 4 (Forest Cabin)
-      {
-        spotId: 4,
-        url: 'https://example.com/images/forest-cabin/1.jpg',
-        preview: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+      // // Spot 4 (Forest Cabin)
+      // {
+      //   spotId: 4,
+      //   url: 'https://example.com/images/forest-cabin/1.jpg',
+      //   preview: true,
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      // },
     ]);
   },
 

@@ -70,72 +70,24 @@ router.get('/current', requireAuth, async (req, res, next) => {
     }
 });
 
-// GET spot details by id
+
+//GET a spot by its id
 router.get('/:id', async (req, res, next) => {
-    const { id } = req.params;
-
     try {
-        // Fetch spot by id, including associated images, owner, and reviews
-        const spot = await Spot.findOne({
-            where: { id },
-            include: [
-                {
-                    model: SpotImage,
-                    attributes: ['id', 'url', 'preview'],
-                },
-                {
-                    model: User,
-                    as: 'Owner',  // Assuming 'Owner' is the alias for the association
-                    attributes: ['id', 'firstName', 'lastName'],
-                },
-                {
-                    model: Review,
-                    attributes: [
-                        [sequelize.fn('AVG', sequelize.col('stars')), 'avgStarRating'],
-                        [sequelize.fn('COUNT', sequelize.col('id')), 'numReviews']
-                    ],
-                },
-            ]
-        });
+        const id = req.params.id; // extract the id number from the endpoint that is put it (for example if endpoint is 1)
+        const details = await Spot.findOne({
+            where: { id }         // Pass an object with a 'where' clause to find the spot by id . This is how you query for a spot by its id. The where clause specifies the condition to match ths id. 
+        }); 
 
-        if (!spot) {
-            return res.status(404).json({ message: "Spot couldn't be found" });
+        if (!details) {           // if the spot id does not exist return an error message 
+            return res.status(404).json({ message: "Spot couldn't be found" }); 
         }
 
-        const spotData = spot.toJSON();
-        const spotResponse = {
-            id: spotData.id,
-            ownerId: spotData.ownerId,
-            address: spotData.address,
-            city: spotData.city,
-            state: spotData.state,
-            country: spotData.country,
-            lat: spotData.lat,
-            lng: spotData.lng,
-            name: spotData.name,
-            description: spotData.description,
-            price: spotData.price,
-            createdAt: spotData.createdAt,
-            updatedAt: spotData.updatedAt,
-            numReviews: spotData.Reviews.numReviews,
-            avgStarRating: spotData.Reviews.avgStarRating,
-            SpotImages: spotData.SpotImages.map(image => ({
-                id: image.id,
-                url: image.url,
-                preview: image.preview,
-            })),
-            Owner: {
-                id: spotData.Owner.id,
-                firstName: spotData.Owner.firstName,
-                lastName: spotData.Owner.lastName,
-            },
-        };
-
-        return res.status(200).json(spotResponse);
+        return res.status(200).json(details);        // send back the details of the Spot id (our first spot which should be '123 Sunny Beach St' and all its info)
     } catch (error) {
         next(error);
     }
-});
+}); 
 
 // POST a new spot
 router.post('/', requireAuth, [
@@ -184,5 +136,124 @@ router.post('/', requireAuth, [
         next(error);
     }
 });
+
+// POST an image to a spot
+router.post('/:spotId/images', requireAuth, async (req, res, next) => {
+    try {
+        const { spotId } = req.params;
+        const { url, preview } = req.body;
+        const spot = await Spot.findByPk(spotId);
+
+        if (!spot) {
+            return res.status(404).json({
+                message: "Spot couldn't be found",
+                statusCode: 404
+            });
+        }
+
+        // Only the spot owner can add images
+        if (spot.ownerId !== req.user.id) {
+            return res.status(403).json({
+                message: "Forbidden",
+                statusCode: 403
+            });
+        }
+
+        const newImage = await SpotImage.create({
+            spotId: spot.id,
+            url,
+            preview
+        });
+
+        return res.status(200).json({
+            id: newImage.id,
+            url: newImage.url,
+            preview: newImage.preview
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+// PUT edit a Spot
+router.put('/:spotId', requireAuth, [
+    check('address').notEmpty().withMessage('Street address is required'),
+    check('city').notEmpty().withMessage('City is required'),
+    check('state').notEmpty().withMessage('State is required'),
+    check('country').notEmpty().withMessage('Country is required'),
+    check('lat').isFloat({ min: -90, max: 90 }).withMessage('Latitude must be within -90 and 90'),
+    check('lng').isFloat({ min: -180, max: 180 }).withMessage('Longitude must be within -180 and 180'),
+    check('name').isLength({ max: 50 }).withMessage('Name must be less than 50 characters'),
+    check('description').notEmpty().withMessage('Description is required'),
+    check('price').isFloat({ min: 0 }).withMessage('Price per day must be a positive number'),
+    handleValidationErrors
+  ], async (req, res, next) => {
+    try {
+      const { spotId } = req.params;
+      const userId = req.user.id;
+      const spot = await Spot.findByPk(spotId);
+  
+      if (!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+      }
+  
+      if (spot.ownerId !== userId) {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+  
+      const {
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name,
+        description,
+        price
+      } = req.body;
+  
+      await spot.update({
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name,
+        description,
+        price
+      });
+  
+      return res.status(200).json(spot);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+// DELETE a spot by ID
+router.delete('/:id', requireAuth, async (req, res, next) => {
+    try {
+      const spotId = req.params.id;
+      const spot = await Spot.findByPk(spotId);
+  
+      if (!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+      }
+  
+      if (spot.ownerId !== req.user.id) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+  
+      await spot.destroy();
+  
+      return res.status(200).json({ message: "Successfully deleted" });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+
 
 module.exports = router;

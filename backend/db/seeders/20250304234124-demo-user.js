@@ -1,5 +1,5 @@
 'use strict';
-console.log("Inserting Users");
+// console.log("Inserting Users");
 
 const bcrypt = require("bcryptjs");
 

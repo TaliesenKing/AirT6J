@@ -8,13 +8,15 @@ module.exports = (sequelize, DataTypes) => {
       // One-to-many: A user can have many spots
       User.hasMany(models.Spot, {
         foreignKey: 'ownerId',
-        onDelete: 'CASCADE',  // Ensures when a user is deleted, their spots are also deleted
+        // onDelete: 'CASCADE',  // Ensures when a user is deleted, their spots are also deleted
+        // hooks: true
       });
 
       // One-to-many: A user can have many reviews
       User.hasMany(models.Review, {
         foreignKey: 'userId',
-        onDelete: 'CASCADE',  // Ensures when a user is deleted, their reviews are also deleted
+        // onDelete: 'CASCADE',  // Ensures when a user is deleted, their reviews are also deleted
+        // hooks: true
       });
     }
   }

@@ -8,20 +8,20 @@ static associate(models) {// define association here
   ReviewImage.belongsTo(models.Review, {
     foreignKey: 'reviewId',
     as: 'review',
-    onDelete: 'CASCADE',
-    hooks: true
+    // onDelete: 'CASCADE',
+    // hooks: true
   });
   }
 }
 ReviewImage.init({
-  spotId: {
+  reviewId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: 'Reviews',
       key: 'id'
     },
-      onDelete: 'CASCADE'
+      // onDelete: 'CASCADE'
     },
   url: {
     type: DataTypes.STRING,

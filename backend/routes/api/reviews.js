@@ -4,72 +4,29 @@ const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { User } = require('../../db/models');
+const { Review, Spot, ReviewImage } = require('../../db/models');
 const router = express.Router();
 
 
 //#1 we need a GET request that returns all reviews by current user
 
-router.get('/reviews', requireAuth, async (req, res) => {
-  try {
-    const userId = req.user.id; // Get the current user's ID from the authentication token
+router.get('/current', requireAuth, async (req, res) => {
+  const userId = req.user.id;
 
-    // Fetch all reviews by the current user with associated Spot, User, and ReviewImages
+  try {
     const reviews = await Review.findAll({
       where: { userId },
       include: [
-        {
-          model: User,
-          attributes: ['id', 'firstName', 'lastName'], // Include the User's first name and last name
-        },
-        {
-          model: Spot,
-          attributes: ['id', 'ownerId', 'address', 'city', 'state', 'country', 'lat', 'lng', 'name', 'price', 'previewImage'], // Include Spot details
-        },
-        {
-          model: ReviewImage,
-          attributes: ['id', 'url'], // Include ReviewImages
-        },
+        { model: User, attributes: ['id', 'firstName', 'lastName'] },
+        { model: Spot },
+        { model: ReviewImage },
       ],
     });
 
-    // Map through the reviews and format the data as required by the response
-    const reviewsResponse = reviews.map(review => ({
-      id: review.id,
-      userId: review.userId,
-      spotId: review.spotId,
-      review: review.review,
-      stars: review.stars,
-      createdAt: review.createdAt,
-      updatedAt: review.updatedAt,
-      User: {
-        id: review.User.id,
-        firstName: review.User.firstName,
-        lastName: review.User.lastName,
-      },
-      Spot: {
-        id: review.Spot.id,
-        ownerId: review.Spot.ownerId,
-        address: review.Spot.address,
-        city: review.Spot.city,
-        state: review.Spot.state,
-        country: review.Spot.country,
-        lat: review.Spot.lat,
-        lng: review.Spot.lng,
-        name: review.Spot.name,
-        price: review.Spot.price,
-        previewImage: review.Spot.previewImage,
-      },
-      ReviewImages: review.ReviewImages.map(image => ({
-        id: image.id,
-        url: image.url,
-      })),
-    }));
-
-    // Send the response
-    return res.status(200).json({ Reviews: reviewsResponse });
+    return res.status(200).json({  Reviews: reviews });
   } catch (error) {
-    console.error('Error fetching reviews:', error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    console.error(error);
+    res.status(500).json({ message: 'Something went wrong' });
   }
 });
 
@@ -251,67 +208,45 @@ router.post(
   );
 
 //#5 next route needs to Edit a Review
-router.put(
-    '/reviews/:reviewId',
-    requireAuth, // Ensure the user is authenticated
-    [
-      // Validation checks
-      check('review')
-        .notEmpty()
-        .withMessage('Review text is required')
-        .isLength({ max: 500 })
-        .withMessage('Review text must be less than 500 characters'),
-      check('stars')
-        .isInt({ min: 1, max: 5 })
-        .withMessage('Stars must be an integer from 1 to 5'),
-    ],
-    async (req, res) => {
-      const { reviewId } = req.params;
-      const { review, stars } = req.body;
-      const userId = req.user.id; // Get the current user's ID from the authentication token
-  
-      // Check if the request body is valid
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: 'Bad Request',
-          errors: errors.mapped(),
-        });
-      }
-  
-      try {
-        // Check if the review exists
-        const existingReview = await Review.findByPk(reviewId);
-        if (!existingReview) {
-          return res.status(404).json({ message: "Review couldn't be found" });
-        }
-  
-        // Check if the review belongs to the current user
-        if (existingReview.userId !== userId) {
-          return res.status(403).json({ message: 'You are not authorized to edit this review' });
-        }
-  
-        // Update the review
-        existingReview.review = review;
-        existingReview.stars = stars;
-        await existingReview.save();
-  
-        // Return the updated review
-        return res.status(200).json({
-          id: existingReview.id,
-          userId: existingReview.userId,
-          spotId: existingReview.spotId,
-          review: existingReview.review,
-          stars: existingReview.stars,
-          createdAt: existingReview.createdAt,
-          updatedAt: existingReview.updatedAt,
-        });
-      } catch (error) {
-        console.error('Error updating review:', error);
-        return res.status(500).json({ message: 'Internal Server Error' });
-      }
+router.put('/:reviewId', requireAuth, async (req, res) => {
+  const { reviewId } = req.params;
+  const { review, stars } = req.body;
+  const userId = req.user.id;
+
+  // Validate input
+  const errors = {};
+  if (!review) errors.review = "Review text is required";
+  if (!Number.isInteger(stars) || stars < 1 || stars > 5)
+    errors.stars = "Stars must be an integer from 1 to 5";
+
+  if (Object.keys(errors).length) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors,
+    });
+  }
+
+  try {
+    const existingReview = await Review.findByPk(reviewId);
+
+    if (!existingReview) {
+      return res.status(404).json({ message: "Review couldn't be found" });
     }
-  );
+
+    if (existingReview.userId !== userId) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    existingReview.review = review;
+    existingReview.stars = stars;
+    await existingReview.save();
+
+    return res.status(200).json(existingReview);
+  } catch (err) {
+    console.error('Error updating review:', err);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 
   //#6 last one this one deletes a review

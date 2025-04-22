@@ -8,8 +8,8 @@ static associate(models) {// define association here
   SpotImage.belongsTo(models.Spot, {
     foreignKey: 'spotId',
     as: 'Spot',
-    onDelete: 'CASCADE',
-    hooks: true
+    // onDelete: 'CASCADE',
+    // hooks: true
   });
   }
 }
@@ -21,7 +21,7 @@ SpotImage.init({
       model: 'Spots',
       key: 'id'
     },
-      onDelete: 'CASCADE'
+      // onDelete: 'CASCADE'
     },
   url: {
     type: DataTypes.STRING,

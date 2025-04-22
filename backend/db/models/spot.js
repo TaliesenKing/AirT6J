@@ -8,19 +8,22 @@ module.exports = (sequelize, DataTypes) => {
       // Many-to-one: A spot belongs to a user (owner)
       Spot.belongsTo(models.User, {
         foreignKey: 'ownerId',
-        onDelete: 'CASCADE',  // Ensures when a user is deleted, their spot is also deleted
+        // onDelete: 'CASCADE',  // Ensures when a user is deleted, their spot is also deleted
+        // hooks: true
       });
 
       // One-to-many: A spot can have many reviews
       Spot.hasMany(models.Review, {
         foreignKey: 'spotId',
-        onDelete: 'CASCADE',  // Ensures when a spot is deleted, its reviews are also deleted
+        // onDelete: 'CASCADE',  // Ensures when a spot is deleted, its reviews are also deleted
+        // hooks: true
       });
 
       // One-to-many: A spot can have many spot images
       Spot.hasMany(models.SpotImage, {
         foreignKey: 'spotId',
-        onDelete: 'CASCADE',  // Ensures when a spot is deleted, its images are also deleted
+        // onDelete: 'CASCADE',  // Ensures when a spot is deleted, its images are also deleted
+        // hooks: true
       });
     }
   }

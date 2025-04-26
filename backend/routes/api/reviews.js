@@ -9,7 +9,6 @@ const router = express.Router();
 
 
 //#1 we need a GET request that returns all reviews by current user
-
 router.get('/current', requireAuth, async (req, res) => {
   const userId = req.user.id;
 
@@ -17,13 +16,72 @@ router.get('/current', requireAuth, async (req, res) => {
     const reviews = await Review.findAll({
       where: { userId },
       include: [
-        { model: User, attributes: ['id', 'firstName', 'lastName'] },
-        { model: Spot },
-        { model: ReviewImage },
+        {
+          model: User,
+          attributes: ['id', 'firstName', 'lastName'], // keep only necessary fields
+        },
+        {
+          model: Spot,
+          attributes: [
+            'id',
+            'ownerId',
+            'address',
+            'city',
+            'state',
+            'country',
+            'lat',
+            'lng',
+            'name',
+            'price',
+          ], // keep only necessary fields
+        },
+        {
+          model: ReviewImage,
+          where: { preview: true }, // to filter out only the preview image
+          attributes: ['url'], // get only the URL of the preview image
+        },
       ],
     });
 
-    return res.status(200).json({  Reviews: reviews });
+    // Format the response
+    const formattedReviews = reviews.map(review => {
+      // Extract the preview image URL
+      const previewImage = review.ReviewImages.length > 0 ? review.ReviewImages[0].url : null;
+
+      return {
+        id: review.id,
+        userId: review.userId,
+        spotId: review.spotId,
+        review: review.review,
+        stars: review.stars,
+        createdAt: review.createdAt,
+        updatedAt: review.updatedAt,
+        User: {
+          id: review.User.id,
+          firstName: review.User.firstName,
+          lastName: review.User.lastName,
+        },
+        Spot: {
+          id: review.Spot.id,
+          ownerId: review.Spot.ownerId,
+          address: review.Spot.address,
+          city: review.Spot.city,
+          state: review.Spot.state,
+          country: review.Spot.country,
+          lat: review.Spot.lat,
+          lng: review.Spot.lng,
+          name: review.Spot.name,
+          price: review.Spot.price,
+          previewImage, // Add the previewImage here
+        },
+        ReviewImages: review.ReviewImages.map(img => ({
+          id: img.id,
+          url: img.url,
+        })),
+      };
+    });
+
+    return res.status(200).json({ Reviews: formattedReviews });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Something went wrong' });
@@ -85,81 +143,53 @@ router.get('/spots/:spotId/reviews', async (req, res) => {
     }
   });
  
-//#3 We need to create a review for a spot based on the spot's id
-router.post(
-    '/spots/:spotId/reviews',
-    requireAuth, // Middleware to ensure user is authenticated
-    [
-      // Validation checks
-      check('review')
-        .notEmpty()
-        .withMessage('Review text is required')
-        .isLength({ max: 500 })
-        .withMessage('Review text must be less than 500 characters'),
-      check('stars')
-        .isInt({ min: 1, max: 5 })
-        .withMessage('Stars must be an integer from 1 to 5'),
-    ],
-    async (req, res) => {
-      const { spotId } = req.params;
-      const { review, stars } = req.body;
-      const userId = req.user.id; // Get the current user's ID from the authentication token
-  
-      // Check if there are validation errors
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: 'Bad Request',
-          errors: errors.mapped(),
-        });
-      }
-  
-      try {
-        // Check if the Spot exists
-        const spot = await Spot.findByPk(spotId);
-        if (!spot) {
-          return res.status(404).json({ message: "Spot couldn't be found" });
-        }
-  
-        // Check if the user has already reviewed this spot
-        const existingReview = await Review.findOne({
-          where: { spotId, userId },
-        });
-        if (existingReview) {
-          return res.status(500).json({
-            message: 'User already has a review for this spot',
-          });
-        }
-  
-        // Create the new review
-        const newReview = await Review.create({
-          userId,
-          spotId,
-          review,
-          stars,
-        });
-  
-        // Return the newly created review
-        return res.status(201).json({
-          id: newReview.id,
-          userId: newReview.userId,
-          spotId: newReview.spotId,
-          review: newReview.review,
-          stars: newReview.stars,
-          createdAt: newReview.createdAt,
-          updatedAt: newReview.updatedAt,
-        });
-      } catch (error) {
-        console.error('Error creating review:', error);
-        return res.status(500).json({ message: 'Internal Server Error' });
-      }
-    }
-  );
 
+  //create a review
+  router.post('/spots/:spotId/reviews', requireAuth, async (req, res) => {
+    const { spotId } = req.params;
+    const { review, stars } = req.body;
+    const userId = req.user.id; // Get the current user's ID from the authentication token
+  
+    // Validation
+    if (!review || typeof review !== 'string' || review.trim().length < 1) {
+      return res.status(400).json({ message: 'Review text is required' });
+    }
+    if (!stars || stars < 1 || stars > 5) {
+      return res.status(400).json({ message: 'Stars must be between 1 and 5' });
+    }
+  
+    try {
+      // Check if the spot exists
+      const spot = await Spot.findByPk(spotId);
+      if (!spot) {
+        return res.status(404).json({ message: "Spot couldn't be found" });
+      }
+  
+      // Check if the user already reviewed this spot
+      const existingReview = await Review.findOne({ where: { userId, spotId } });
+      if (existingReview) {
+        return res.status(500).json({ message: 'User already has a review for this spot' });
+      }
+  
+      // Create the new review
+      const newReview = await Review.create({
+        userId,
+        spotId,
+        review,
+        stars,
+      });
+  
+      // Return the created review
+      return res.status(201).json(newReview);
+    } catch (error) {
+      console.error('Error creating review:', error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
 
 //#4 We need to add an image to a review based on the review's ID
 router.post(
-    '/reviews/:reviewId/images',
+    '/:reviewId/images',
     requireAuth, // Middleware to ensure user is authenticated
     async (req, res) => {
       const { reviewId } = req.params;
@@ -250,7 +280,7 @@ router.put('/:reviewId', requireAuth, async (req, res) => {
 
 
   //#6 last one this one deletes a review
-  router.delete('/reviews/:reviewId', requireAuth, async (req, res) => {
+  router.delete('/:reviewId', requireAuth, async (req, res) => {
     const { reviewId } = req.params;
     const userId = req.user.id; // Get the current user's ID from the authentication token
   

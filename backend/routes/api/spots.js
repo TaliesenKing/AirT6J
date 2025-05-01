@@ -7,13 +7,78 @@ const router = express.Router();
 
 // GET all spots
 router.get('/', async (req, res, next) => {
-    try {
-        const spots = await Spot.findAll();  // Fetch all spots
-        return res.status(200).json(spots);
-    } catch (error) {
-        next(error);
+  try {
+    // Declare defaults first
+    let { page = 1, size = 20, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
+
+    // Validation for query parameters
+    const errors = {};
+    const queryParamValidations = {
+      page: {
+        min: 1,
+        max: 10,
+        minMsg: "Page must be greater than or equal to 1",
+        maxMsg: "Page must be less than or equal to 10",
+        invalidMsg: "Page must be a number",
+        default: 1
+      },
+      size: {
+        min: 1,
+        max: 20,
+        minMsg: "Size must be greater than or equal to 1",
+        maxMsg: "Size must be less than or equal to 20",
+        invalidMsg: "Size must be a number",
+        default: 20
+      },
+      minLat: {
+        invalidMsg: "Minimum latitude is invalid"
+      },
+      maxLat: {
+        invalidMsg: "Maximum latitude is invalid"
+      },
+      minLng: {
+        invalidMsg: "Minimum longitude is invalid"
+      },
+      maxLng: {
+        invalidMsg: "Maximum longitude is invalid"
+      },
+      minPrice: {
+        min: 0,
+        minMsg: "Minimum price must be greater than or equal to 0",
+        invalidMsg: "Minimum price must be a number"
+      },
+      maxPrice: {
+        min: 0,
+        minMsg: "Maximum price must be greater than or equal to 0",
+        invalidMsg: "Maximum price must be a number"
+      }
+    };
+
+    // Validate query parameters
+    for (const [param, rules] of Object.entries(queryParamValidations)) {
+      const error = validateQueryParam(req.query[param], rules);
+      if (error) errors[param] = error;
     }
+
+    if (Object.keys(errors).length) {
+      return res.status(400).json({
+        message: "Bad Request",
+        errors
+      });
+    }
+
+    // If validation passes, proceed with your logic (e.g., fetching spots)
+    const spots = await Spot.findAll({
+      // Your logic for fetching spots goes here
+    });
+
+    return res.status(200).json({ Spots: spots });
+
+  } catch (error) {
+    next(error);
+  }
 });
+
 
 // GET all spots owned by the current user
 router.get('/current', requireAuth, async (req, res, next) => {

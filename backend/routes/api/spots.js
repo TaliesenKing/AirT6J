@@ -8,6 +8,7 @@ const router = express.Router();
 // GET all spots
 router.get('/', async (req, res, next) => {
   try {
+    //now lets add some query validations
     // Declare defaults first
     let { page = 1, size = 20, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 

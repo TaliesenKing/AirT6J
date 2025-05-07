@@ -374,7 +374,7 @@ router.post(
       const userId = req.user.id; // Get the current user's ID from the authentication token
   
     
-      console.log('Incoming data:', { spotId, review, stars, userId });
+      // console.log('Incoming data:', { spotId, review, stars, userId });
 
       // Check if there are validation errors
       const errors = validationResult(req);

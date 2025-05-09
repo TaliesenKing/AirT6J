@@ -84,6 +84,16 @@ export const signup = (user) => async (dispatch) => {
 };
 
 
+
+//logout action
+export const logout = () => async (dispatch) => {
+  const response = await csrfFetch('/api/session', {
+    method: 'DELETE'
+  });
+  dispatch(removeUser());
+  return response;
+};
+
   //lastly we should export our actions
   export { setUser, removeUser, login };
   //this way other files can call those functions

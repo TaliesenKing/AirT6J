@@ -57,6 +57,14 @@ const login = (user) => async (dispatch) => {
     return response;
 };
 
+//restore session action
+export const restoreUser = () => async (dispatch) => {
+  const response = await csrfFetch("/api/session");
+  const data = await response.json();
+  dispatch(setUser(data.user));
+  return response;
+};
+
   //lastly we should export our actions
   export { setUser, removeUser, login };
   //this way other files can call those functions

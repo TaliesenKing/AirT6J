@@ -18,6 +18,7 @@ const spots = useSelector(state => Object.values(state.spots));
 useEffect(() => {
     dispatch(fetchSpots());
 }, [dispatch]);
+console.log("Spots data:", useSelector(state => state.spots));
 //now when the SpotsPage loads, it will dispatch the fetchSpots thunk action which should call to the backend
 //the spots we fetch from the backend will get stored in Redux
 //adding dispatch because its a stable dependancy array so this only runs once when the component mounts

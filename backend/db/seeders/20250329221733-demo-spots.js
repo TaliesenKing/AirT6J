@@ -1,9 +1,9 @@
 'use strict';
-// console.log("Inserting Spots");
+
 
 let options = {};
 if (process.env.NODE_ENV === 'production') {
-  options.schema = process.env.SCHEMA;  // define your schema in options object
+  options.schema = process.env.SCHEMA;  
 }
 
 options.tableName = "Spots";
@@ -54,20 +54,6 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      // {
-      //   ownerId: 4,
-      //   address: '101 Forest Ln',
-      //   city: 'Portland',
-      //   state: 'OR',
-      //   country: 'USA',
-      //   lat: 45.5152,
-      //   lng: -122.6784,
-      //   name: 'Forest Cabin',
-      //   description: 'A rustic cabin nestled in the woods. A perfect getaway for those looking to escape the hustle and bustle.',
-      //   price: 180.00,
-      //   createdAt: new Date(),
-      //   updatedAt: new Date(),
-      // }
     ]);
   },
 

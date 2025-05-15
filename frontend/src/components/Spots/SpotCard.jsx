@@ -7,9 +7,10 @@ import './SpotCard.css';
 //we need a function that will receive a spot as an argument
 //its return should wrap the card in a Link that we imported from react-router-dom
 function SpotCard({ spot }) {
+    console.log('Preview image URL:', spot.previewImage);
     return (
         <div className="spot-card">
-            <Link to={'/spots/${spot.id}'}>
+            <Link to={`/spots/${spot.id}`}>
             <img src={spot.previewImage} alt={spot.name} />
             <div className="spot-info">
                 <div>{spot.city}, {spot.state}</div>

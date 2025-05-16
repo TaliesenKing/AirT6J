@@ -53,23 +53,27 @@ router.get('/', async (req, res, next) => {
     if (maxPrice !== undefined) where.price = { ...where.price, [Op.lte]: Number(maxPrice) };
 
     const spots = await Spot.findAll({
-      where,
-      limit: size,
-      offset: (page - 1) * size,
       include: [
         {
           model: SpotImage,
+          attributes: ['url'],
           where: { preview: true },
-          required: false,
-          attributes: ['url']
+          required: false
         },
         {
           model: Review,
-          attributes: [[sequelize.fn('AVG', sequelize.col('Reviews.stars')), 'avgRating']],
-          required: false
+          attributes: []
         }
       ],
-      // group: ['Spot.id', 'SpotImages.id']
+      attributes: {
+        include: [
+          [
+            sequelize.fn("AVG", sequelize.col("Reviews.stars")),
+            "avgRating"
+          ]
+        ]
+      },
+      group: ['Spot.id', 'SpotImages.id']
     });
 
     const formatted = spots.map(spot => {
@@ -88,7 +92,7 @@ router.get('/', async (req, res, next) => {
         price: spotData.price,
         createdAt: spotData.createdAt,
         updatedAt: spotData.updatedAt,
-        avgRating: Number(spotData.Reviews?.[0]?.avgRating || 0).toFixed(1),
+        avgRating: spotData.avgRating ? Number(spotData.avgRating).toFixed(1) : null,
         previewImage: spotData.SpotImages?.[0]?.url || null
       };
     });
@@ -107,35 +111,52 @@ router.get('/current', requireAuth, async (req, res, next) => {
       include: [
         {
           model: SpotImage,
-          attributes: ['url'],
+          attributes: ['url', 'preview'],
           where: { preview: true },
           required: false
         },
         {
           model: Review,
-          attributes: [[sequelize.fn('AVG', sequelize.col('stars')), 'avgRating']],
+          attributes: []
         }
       ],
+      attributes: {
+        include: [
+          [sequelize.fn("AVG", sequelize.col("Reviews.stars")), "avgRating"]
+        ]
+      },
       group: ['Spot.id', 'SpotImages.id']
     });
 
-    const response = spots.map(spot => {
-      const spotJSON = spot.toJSON();
+    const formatted = spots.map(spot => {
+      const spotData = spot.toJSON();
       return {
-        ...spotJSON,
-        previewImage: spotJSON.SpotImages?.[0]?.url || null,
-        avgRating: Number(spotJSON.Reviews?.[0]?.avgRating || 0).toFixed(1)
+        id: spotData.id,
+        ownerId: spotData.ownerId,
+        address: spotData.address,
+        city: spotData.city,
+        state: spotData.state,
+        country: spotData.country,
+        lat: spotData.lat,
+        lng: spotData.lng,
+        name: spotData.name,
+        description: spotData.description,
+        price: spotData.price,
+        createdAt: spotData.createdAt,
+        updatedAt: spotData.updatedAt,
+        avgRating: Number(spotData.avgRating || 0).toFixed(1),
+        previewImage: spotData.SpotImages?.[0]?.url || null
       };
     });
 
-    return res.status(200).json({ Spots: response });
+    return res.status(200).json({ Spots: formatted });
   } catch (error) {
     next(error);
   }
 });
 
 // GET a spot by ID
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -145,11 +166,7 @@ router.get('/:id', async (req, res, next) => {
       include: [
         {
           model: SpotImage,
-          attributes: ['url']
-        },
-        {
-          model: Review,
-          attributes: []
+          attributes: ['id', 'url', 'preview']
         }
       ]
     });
@@ -158,12 +175,32 @@ router.get('/:id', async (req, res, next) => {
       return res.status(404).json({ message: 'Spot not found' });
     }
 
-    res.json(spot);
+    // Get average star rating from reviews
+    const reviews = await Review.findAll({
+      where: { spotId: id },
+      attributes: ['stars']
+    });
+
+    const totalStars = reviews.reduce((sum, r) => sum + r.stars, 0);
+    const avgStarRating = reviews.length ? (totalStars / reviews.length).toFixed(2) : null;
+
+    // Prepare response object
+    const spotData = spot.toJSON();
+
+    // Add previewImage field if any preview image exists
+    const preview = spotData.SpotImages.find(img => img.preview);
+    spotData.previewImage = preview ? preview.url : null;
+
+    spotData.avgStarRating = avgStarRating;
+
+    res.json(spotData);
+
   } catch (err) {
     console.error('🔥 Error fetching spot:', err);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 // GET reviews for a spot
 router.get('/:spotId/reviews', async (req, res) => {

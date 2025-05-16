@@ -26,3 +26,21 @@
     margin-bottom: 5px;
     font-size: 14px;
   }
+
+  .spot-card-link {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .spot-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 12px;
+    background-color: white;
+    transition: transform 0.2s ease;
+  }
+  
+  .spot-card:hover {
+    transform: scale(1.02);
+  }

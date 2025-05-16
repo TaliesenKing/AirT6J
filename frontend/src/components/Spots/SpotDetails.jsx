@@ -9,11 +9,11 @@ function SpotDetails() {
     const fetchSpot = async () => {
         try {
             const res = await fetch(`/api/spots/${spotId}`);
-            console.log('Response:', res); // 👈 Log response
+            console.log('Response:', res); 
       
             if (res.ok) {
               const data = await res.json();
-              console.log('Spot data:', data); // 👈 Log data
+              console.log('Spot data:', data); 
               setSpot(data);
             } else {
               console.error('Failed to fetch spot:', res.status);

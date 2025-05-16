@@ -12,8 +12,7 @@ import './SpotsPage.css' //this will add the style
 function SpotsPage() { //we dont need to pass any arguments
 //lets declare our Redux hooks first
 const dispatch = useDispatch(); //we'll use this to send things to Redux
-const spots = useSelector(state => Object.values(state.spots));
-//we learned about useSelector with Ray
+const spots = useSelector(state => Object.values(state.spots.allSpots));//we learned about useSelector with Ray
 //object.values will change the object of spots into an array so we can map it
 useEffect(() => {
     dispatch(fetchSpots());

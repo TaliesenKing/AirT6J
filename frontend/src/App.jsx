@@ -5,9 +5,9 @@ import Navigation from './components/Navigation';
 import * as sessionActions from './store/session';
 import SpotsPage from './components/Spots/SpotsPage'; 
 import SpotDetails from './components/Spots/SpotDetails';
-
-
-
+import HomePage from './components/HomePage';
+import CurrentUserSpots from './components/Spots/CurrentUserSpots';
+import EditSpotForm from './components/Spots/EditSpotForm';
 
 
 function Layout() {
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <h1>Welcome!</h1>
+        element: <HomePage />
       },
       {
         path: '/spots', 
@@ -43,6 +43,14 @@ const router = createBrowserRouter([
       {
         path: '/spots/:spotId',
         element: <SpotDetails />
+      },
+      {
+        path: '/spots/current', 
+        element: <CurrentUserSpots />
+      },
+      {
+        path: '/spots/:spotId/edit',
+        element: <EditSpotForm />
       }
     ]
   }

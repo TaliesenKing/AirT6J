@@ -33,19 +33,18 @@ router.get('/current', requireAuth, async (req, res) => {
             'lng',
             'name',
             'price',
-          ], // keep only necessary fields
+          ], 
         },
         {
           model: ReviewImage,
-          where: { preview: true }, // to filter out only the preview image
-          attributes: ['url'], // get only the URL of the preview image
+          attributes: ['url'], 
         },
       ],
     });
 
-    // Format the response
+    
     const formattedReviews = reviews.map(review => {
-      // Extract the preview image URL
+      
       const previewImage = review.ReviewImages.length > 0 ? review.ReviewImages[0].url : null;
 
       return {
@@ -168,7 +167,7 @@ router.get('/spots/:spotId/reviews', async (req, res) => {
       // Check if the user already reviewed this spot
       const existingReview = await Review.findOne({ where: { userId, spotId } });
       if (existingReview) {
-        return res.status(500).json({ message: 'User already has a review for this spot' });
+        return res.status(403).json({ message: 'User already has a review for this spot' });
       }
   
       // Create the new review

@@ -8,6 +8,9 @@ import SpotDetails from './components/Spots/SpotDetails';
 import HomePage from './components/HomePage';
 import CurrentUserSpots from './components/Spots/CurrentUserSpots';
 import EditSpotForm from './components/Spots/EditSpotForm';
+import { restoreCSRF } from './store/csrf';
+
+restoreCSRF(); 
 
 
 function Layout() {

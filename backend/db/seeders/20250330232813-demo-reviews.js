@@ -1,5 +1,5 @@
 'use strict';
-// console.log("Inserting Reviews");
+
 
 let options = {};
 if (process.env.NODE_ENV === 'production') {

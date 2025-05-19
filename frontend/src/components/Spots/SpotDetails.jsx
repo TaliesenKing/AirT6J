@@ -1,9 +1,20 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { csrfFetch } from '../../store/csrf';
+import ReviewList from '../Reviews/ReviewList';
+import ReviewForm from '../Reviews/ReviewForm';
+
 
 function SpotDetails() {
   const { spotId } = useParams();
   const [spot, setSpot] = useState(null);
+  const sessionUser = useSelector(state => state.session.user);
+  const navigate = useNavigate();
+  const [showReviewForm, setShowReviewForm] = useState(false);
+
+
+
 
   useEffect(() => {
     const fetchSpot = async () => {
@@ -26,6 +37,25 @@ function SpotDetails() {
     fetchSpot();
   }, [spotId]);
 
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this spot?');
+    if (!confirmDelete) return;
+  
+    try {
+      const res = await csrfFetch(`/api/spots/${spot.id}`, {
+        method: 'DELETE'
+      });
+  
+      if (res.ok) {
+        navigate('/spots/current');
+      }
+    } catch (err) {
+      console.error('Error deleting spot:', err);
+    }
+  };
+
+
+
   if (!spot) return <h2>Loading spot details...</h2>;
 
   return (
@@ -36,6 +66,17 @@ function SpotDetails() {
       <p>{spot.description}</p>
       <p><strong>${spot.price}</strong> / night</p>
       <p>★ {spot.avgStarRating || "New"}</p>
+  
+      {sessionUser?.id === spot.ownerId && (
+        <button onClick={handleDelete}>Delete Spot</button>
+      )}
+      <ReviewList spotId={spot.id} />
+      {sessionUser && sessionUser.id !== spot.ownerId && (
+  <button onClick={() => setShowReviewForm(true)}>Write a Review</button>
+)}
+{showReviewForm && (
+  <ReviewForm spotId={spot.id} onClose={() => setShowReviewForm(false)} />
+)}
     </div>
   );
 }

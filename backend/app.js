@@ -6,7 +6,7 @@ const csurf = require('csurf');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const { ValidationError } = require('sequelize');
-
+const path = require('path');
 const { environment } = require('./config/index');
 const isProduction = environment === 'production';
 
@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Security Middleware
-if (!isProduction) {
+if (!isProduction || 1 == 1) {
     // enable cors only in development
     app.use(cors());
   }
@@ -78,6 +78,18 @@ app.use((err, _req, res, _next) => {
     stack: isProduction ? null : err.stack
   });
 });
+
+
+
+if (isProduction) {
+  // Serve static files from dist
+  app.use(express.static(path.resolve(__dirname, 'dist')));
+
+  // Serve index.html for any route not handled by API
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
+  });
+}
 
 module.exports = app;
 

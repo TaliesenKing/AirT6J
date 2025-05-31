@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Security Middleware
-if (!isProduction || 1 == 1) {
+if (!isProduction) {
     // enable cors only in development
     app.use(cors());
   }
@@ -81,16 +81,4 @@ app.use((err, _req, res, _next) => {
 
 
 
-if (isProduction) {
-  // Serve static files from dist
-  app.use(express.static(path.resolve(__dirname, 'dist')));
-
-  // Serve index.html for any route not handled by API
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
-  });
-}
-
 module.exports = app;
-
-

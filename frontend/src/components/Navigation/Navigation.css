@@ -1,13 +1,19 @@
 /* Navigation Bar */
-.nav-list {
-    display: flex;
-    gap: 20px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    align-items: center;
-  }
-  
-  .nav-list li:last-child {
-    margin-left: auto;
-  }
+.navigation-bar {
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.navigation-list {
+  display: flex;
+  justify-content: space-between; /* Home on left, Profile on right */
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.profile-button {
+  margin-left: auto; /* Push to right if other content expands */
+}

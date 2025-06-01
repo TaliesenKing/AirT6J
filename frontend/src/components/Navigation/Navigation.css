@@ -7,13 +7,16 @@
 
 .navigation-list {
   display: flex;
-  justify-content: space-between; /* Home on left, Profile on right */
+  justify-content: space-between;
   align-items: center;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.profile-button {
-  margin-left: auto; /* Push to right if other content expands */
+.logo img,
+.logo-image {
+  height: 40px; /* Adjust as needed */
+  width: auto;
+  cursor: pointer;
 }

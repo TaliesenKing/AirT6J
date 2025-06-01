@@ -9,8 +9,10 @@ function Navigation({ isLoaded }) {
   return (
     <nav className="navigation-bar">
       <ul className="navigation-list">
-        <li>
-          <NavLink to="/">Home</NavLink>
+        <li className="logo">
+          <NavLink to="/">
+            <img src="/logo.png" alt="Website Logo" className="logo-image" />
+          </NavLink>
         </li>
         {isLoaded && (
           <li className="profile-button">
@@ -21,6 +23,5 @@ function Navigation({ isLoaded }) {
     </nav>
   );
 }
-
 
 export default Navigation;

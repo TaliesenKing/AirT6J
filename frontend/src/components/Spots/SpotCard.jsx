@@ -8,7 +8,7 @@ import './SpotCard.css';
 //its return should wrap the card in a Link that we imported from react-router-dom
 function SpotCard({ spot }) {
     return (
-      <Link to={`/spots/${spot.id}`} className="spot-card-link">
+      <Link to={`/spots/${spot.id}`} className="spot-card-link" title={spot.name}>
         <div className="spot-card">
           <img src={spot.previewImage || '/fallback.jpg'} alt={spot.name} />
           <div className="spot-info">

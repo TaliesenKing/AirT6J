@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { createSpot } from '../../../store/spots'; // You’ll create this thunk in a moment
+import { createSpot } from '../../../store/spots'; 
 
 const CreateSpotForm = () => {
   const dispatch = useDispatch();

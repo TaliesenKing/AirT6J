@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { csrfFetch } from '../../store/csrf';
 import ReviewList from '../Reviews/ReviewList';
 import ReviewForm from '../Reviews/ReviewForm';
-
+import './SpotDetails.css';
 
 function SpotDetails() {
   const { spotId } = useParams();
@@ -68,8 +68,10 @@ function SpotDetails() {
       <p>★ {spot.avgStarRating || "New"}</p>
   
       {sessionUser?.id === spot.ownerId && (
-        <button onClick={handleDelete}>Delete Spot</button>
-      )}
+  <button onClick={handleDelete} className="delete-spot-button">
+    Delete Spot
+  </button>
+)}
       <ReviewList spotId={spot.id} />
       {sessionUser && sessionUser.id !== spot.ownerId && (
   <button onClick={() => setShowReviewForm(true)}>Write a Review</button>

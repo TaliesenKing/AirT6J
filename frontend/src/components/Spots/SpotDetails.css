@@ -1,0 +1,14 @@
+.delete-spot-button {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .delete-spot-button:hover {
+    background-color: #c0392b;
+  }

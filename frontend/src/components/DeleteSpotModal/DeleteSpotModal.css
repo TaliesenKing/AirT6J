@@ -1,0 +1,18 @@
+.delete-spot-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .delete-spot-modal button.red {
+    background-color: red;
+    color: white;
+    margin: 8px;
+  }
+  
+  .delete-spot-modal button.dark {
+    background-color: #333;
+    color: white;
+    margin: 8px;
+  }
+  

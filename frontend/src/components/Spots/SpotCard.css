@@ -44,3 +44,23 @@
   .spot-card:hover {
     transform: scale(1.02);
   }
+
+  .spot-card-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .delete-spot-button {
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .delete-spot-button:hover {
+    background-color: #d9363e;
+  }

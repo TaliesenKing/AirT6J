@@ -9,7 +9,7 @@ import HomePage from './components/HomePage';
 import CurrentUserSpots from './components/Spots/CurrentUserSpots';
 import EditSpotForm from './components/Spots/EditSpotForm';
 import { restoreCSRF } from './store/csrf';
-import CreateSpotForm from './components/Spots/CreateSpotForm';
+import CreateSpotForm from './components/Spots/CreateSpotForm/CreateSpotForm';
 
 
 

@@ -60,6 +60,24 @@ const loadSpots = (spots) => ({
   };
 
 
+  export const addSpotImage = (spotId, imageData) => async () => {
+  const res = await csrfFetch(`/api/spots/${spotId}/images`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(imageData)
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    return { errors: errorData.errors || ['Failed to upload image'] };
+  }
+
+  const image = await res.json();
+  return image;
+};
+
 
 //this is the reducer
 export default function spotsReducer(state = initialState, action) {

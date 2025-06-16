@@ -14,11 +14,22 @@ function Navigation({ isLoaded }) {
             <img src="/logo.png" alt="Website Logo" className="logo-image" />
           </NavLink>
         </li>
-        {isLoaded && (
-          <li className="profile-button">
-            <ProfileButton user={sessionUser} />
-          </li>
-        )}
+
+        <div className="right-nav">
+          {sessionUser && (
+            <li className="create-spot-button">
+              <NavLink to="/spots/new" className="create-spot-link">
+                Create a New Spot
+              </NavLink>
+            </li>
+          )}
+
+          {isLoaded && (
+            <li className="profile-button">
+              <ProfileButton user={sessionUser} />
+            </li>
+          )}
+        </div>
       </ul>
     </nav>
   );

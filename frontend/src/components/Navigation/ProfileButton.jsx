@@ -66,16 +66,6 @@ function ProfileButton({ user }) {
       </button>
     </li>
     <li>
-  <button
-    onClick={() => {
-      navigate('/spots/new');
-      closeMenu();
-    }}
-  >
-    Create a New Spot
-  </button>
-</li>
-    <li>
       <button onClick={logout}>Log Out</button>
     </li>
   </>

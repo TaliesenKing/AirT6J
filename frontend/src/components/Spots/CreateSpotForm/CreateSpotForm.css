@@ -1,0 +1,9 @@
+.price-input-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.dollar-sign {
+  margin-right: 4px;
+  font-weight: bold;
+}

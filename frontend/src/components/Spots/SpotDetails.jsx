@@ -63,6 +63,7 @@ function SpotDetails() {
       <h1>{spot.name}</h1>
       <p>{spot.city}, {spot.state}, {spot.country}</p>
       <img src={spot.SpotImages?.[0]?.url} alt={spot.name} width="400" />
+      <p>Hosted by {spot.Owner?.firstName}, {spot.Owner?.lastName}</p>
       <p>{spot.description}</p>
       <p><strong>${spot.price}</strong> / night</p>
       <p>★ {spot.avgStarRating || "New"}</p>

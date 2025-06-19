@@ -27,6 +27,7 @@ function CreateSpotModal() {
       </div>
     </div>
   );
-}
+} 
+
 
 export default CreateSpotModal;

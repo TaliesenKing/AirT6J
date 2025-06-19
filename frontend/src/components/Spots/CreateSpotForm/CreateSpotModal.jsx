@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import CreateSpotForm from './CreateSpotForm';
 import './CreateSpotModal.css';
 
@@ -7,9 +7,9 @@ function CreateSpotModal() {
   const navigate = useNavigate();
 
  
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     navigate(-1); 
-  };
+  }, [navigate]);
 
  
   useEffect(() => {
@@ -18,8 +18,8 @@ function CreateSpotModal() {
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-//to do: fix linter error, low priority
+  }, [handleClose]);
+
 
   return (
     <div className="modal-background" onClick={handleClose}>

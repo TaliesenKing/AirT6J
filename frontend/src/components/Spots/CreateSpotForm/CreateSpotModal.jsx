@@ -19,6 +19,7 @@ function CreateSpotModal() {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
+//to do: fix linter error, low priority
 
   return (
     <div className="modal-background" onClick={handleClose}>

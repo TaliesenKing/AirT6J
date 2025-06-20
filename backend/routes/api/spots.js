@@ -27,10 +27,10 @@ router.get('/', async (req, res, next) => {
     const queryParamValidations = {
       page: { min: 1, max: 10, invalidMsg: 'Page must be a number between 1 and 10' },
       size: { min: 1, max: 20, invalidMsg: 'Size must be a number between 1 and 20' },
-      minLat: { invalidMsg: "Minimum latitude is invalid" },
-      maxLat: { invalidMsg: "Maximum latitude is invalid" },
-      minLng: { invalidMsg: "Minimum longitude is invalid" },
-      maxLng: { invalidMsg: "Maximum longitude is invalid" },
+      // minLat: { invalidMsg: "Minimum latitude is invalid" },
+      // maxLat: { invalidMsg: "Maximum latitude is invalid" },
+      // minLng: { invalidMsg: "Minimum longitude is invalid" },
+      // maxLng: { invalidMsg: "Maximum longitude is invalid" },
       minPrice: { min: 0, minMsg: "Minimum price must be >= 0", invalidMsg: "Minimum price must be a number" },
       maxPrice: { min: 0, minMsg: "Maximum price must be >= 0", invalidMsg: "Maximum price must be a number" }
     };
@@ -45,10 +45,10 @@ router.get('/', async (req, res, next) => {
     }
 
     const where = {};
-    if (minLat !== undefined) where.lat = { [Op.gte]: Number(minLat) };
-    if (maxLat !== undefined) where.lat = { ...where.lat, [Op.lte]: Number(maxLat) };
-    if (minLng !== undefined) where.lng = { [Op.gte]: Number(minLng) };
-    if (maxLng !== undefined) where.lng = { ...where.lng, [Op.lte]: Number(maxLng) };
+    // if (minLat !== undefined) where.lat = { [Op.gte]: Number(minLat) };
+    // if (maxLat !== undefined) where.lat = { ...where.lat, [Op.lte]: Number(maxLat) };
+    // if (minLng !== undefined) where.lng = { [Op.gte]: Number(minLng) };
+    // if (maxLng !== undefined) where.lng = { ...where.lng, [Op.lte]: Number(maxLng) };
     if (minPrice !== undefined) where.price = { [Op.gte]: Number(minPrice) };
     if (maxPrice !== undefined) where.price = { ...where.price, [Op.lte]: Number(maxPrice) };
 
@@ -85,8 +85,8 @@ router.get('/', async (req, res, next) => {
         city: spotData.city,
         state: spotData.state,
         country: spotData.country,
-        lat: spotData.lat,
-        lng: spotData.lng,
+        // lat: spotData.lat,
+        // lng: spotData.lng,
         name: spotData.name,
         description: spotData.description,
         price: spotData.price,
@@ -137,8 +137,8 @@ router.get('/current', requireAuth, async (req, res, next) => {
         city: spotData.city,
         state: spotData.state,
         country: spotData.country,
-        lat: spotData.lat,
-        lng: spotData.lng,
+        // lat: spotData.lat,
+        // lng: spotData.lng,
         name: spotData.name,
         description: spotData.description,
         price: spotData.price,
@@ -284,8 +284,8 @@ router.put('/:spotId', requireAuth, [
   check('city').notEmpty().withMessage('City is required'),
   check('state').notEmpty().withMessage('State is required'),
   check('country').notEmpty().withMessage('Country is required'),
-  check('lat').isFloat({ min: -90, max: 90 }).withMessage('Latitude must be within -90 and 90'),
-  check('lng').isFloat({ min: -180, max: 180 }).withMessage('Longitude must be within -180 and 180'),
+  // check('lat').isFloat({ min: -90, max: 90 }).withMessage('Latitude must be within -90 and 90'),
+  // check('lng').isFloat({ min: -180, max: 180 }).withMessage('Longitude must be within -180 and 180'),
   check('name').isLength({ max: 50 }).withMessage('Name must be less than 50 characters'),
   check('description').notEmpty().withMessage('Description is required'),
   check('price').isFloat({ min: 0 }).withMessage('Price per day must be a positive number'),

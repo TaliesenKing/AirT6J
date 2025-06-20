@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { csrfFetch } from '../../store/csrf';
 import ReviewList from '../Reviews/ReviewList';
 import ReviewForm from '../Reviews/ReviewForm';
+import ReviewModal from '../Reviews/ReviewForm';
 import './SpotDetails.css';
 
 function SpotDetails() {
@@ -13,29 +14,31 @@ function SpotDetails() {
   const navigate = useNavigate();
   const [showReviewForm, setShowReviewForm] = useState(false);
 
+const fetchSpotAndReviews = async () => {
+    try {
+      const [spotRes, reviewsRes] = await Promise.all([
+        fetch(`/api/spots/${spotId}`),
+        fetch(`/api/spots/${spotId}/reviews`)
+      ]);
 
+      if (spotRes.ok && reviewsRes.ok) {
+        const spotData = await spotRes.json();
+        const reviewsData = await reviewsRes.json();
+
+        setSpot({ ...spotData, Reviews: reviewsData.Reviews });
+      } else {
+        console.error("Failed to fetch spot or reviews");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  };
 
 
   useEffect(() => {
-    const fetchSpot = async () => {
-        try {
-            const res = await fetch(`/api/spots/${spotId}`);
-            console.log('Response:', res); 
-      
-            if (res.ok) {
-              const data = await res.json();
-              console.log('Spot data:', data); 
-              setSpot(data);
-            } else {
-              console.error('Failed to fetch spot:', res.status);
-            }
-          } catch (err) {
-            console.error('Error fetching spot:', err);
-          }
-    };
+  fetchSpotAndReviews();
+}, [spotId]);
 
-    fetchSpot();
-  }, [spotId]);
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm('Are you sure you want to delete this spot?');
@@ -58,6 +61,13 @@ function SpotDetails() {
 
   if (!spot) return <h2>Loading spot details...</h2>;
 
+  const userOwnsSpot = sessionUser && sessionUser.id === spot.ownerId;
+const userHasReviewed = sessionUser && spot.Reviews?.some(
+  (review) => review.userId === sessionUser.id
+);
+
+const showReviewButton = sessionUser && !userOwnsSpot && !userHasReviewed;
+
   return (
     <div>
       <h1>{spot.name}</h1>
@@ -66,7 +76,9 @@ function SpotDetails() {
       <p>Hosted by {spot.Owner?.firstName}, {spot.Owner?.lastName}</p>
       <p>{spot.description}</p>
       <p><strong>${spot.price}</strong> / night</p>
-      <p>★ {spot.avgStarRating || "New"}</p>
+      <p>
+  ★ {spot.avgStarRating || "New"} · {spot.Reviews?.length || 0} review{spot.Reviews?.length === 1 ? '' : 's'}
+</p>
   
       {sessionUser?.id === spot.ownerId && (
   <button onClick={handleDelete} className="delete-spot-button">
@@ -74,11 +86,13 @@ function SpotDetails() {
   </button>
 )}
       <ReviewList spotId={spot.id} />
-      {sessionUser && sessionUser.id !== spot.ownerId && (
-  <button onClick={() => setShowReviewForm(true)}>Write a Review</button>
+      {showReviewButton && (
+  <button onClick={() => setShowReviewForm(true)}>Post Your Review</button>
 )}
 {showReviewForm && (
-  <ReviewForm spotId={spot.id} onClose={() => setShowReviewForm(false)} />
+  <ReviewModal onClose={() => setShowReviewForm(false)}>
+    <ReviewForm spotId={spot.id} onClose={() => setShowReviewForm(false)} />
+  </ReviewModal>
 )}
     </div>
   );

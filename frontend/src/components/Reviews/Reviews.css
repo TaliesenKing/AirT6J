@@ -1,0 +1,38 @@
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-errors {
+  color: red;
+  list-style: none;
+  padding: 0;
+}
+
+.review-textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  gap: 4px;
+}
+
+.star {
+  cursor: pointer;
+  color: lightgray;
+  transition: color 0.2s;
+}
+
+.star.filled {
+  color: gold;
+}
+
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

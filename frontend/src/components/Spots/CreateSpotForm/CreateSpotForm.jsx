@@ -29,10 +29,12 @@ const CreateSpotForm = () => {
   const [img4, setImg4] = useState('');
 
   if (!sessionUser) return <h2>Please log in to create a spot</h2>;
+//add timeout that takes signed out user to homepage
+
 
   const handleSubmit = async (e) => {
   e.preventDefault();
-  setErrors({}); 
+   setErrors({}); 
 
   const spotData = {
     address,

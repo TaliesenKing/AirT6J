@@ -43,7 +43,7 @@ const loadSpots = (spots) => ({
 
 
   export const createSpot = (spotData) => async (dispatch) => {
-    const res = await fetch('/api/spots', {
+    const res = await csrfFetch('/api/spots', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(spotData)

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createSpot, addSpotImage } from '../../../store/spots'; 
 import './CreateSpotForm.css';
 
-
+//to do: update to modal instead of button
 
 const CreateSpotForm = () => {
   const dispatch = useDispatch();

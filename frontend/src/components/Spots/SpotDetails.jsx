@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { csrfFetch } from '../../store/csrf';
 import ReviewList from '../Reviews/ReviewList';
-import ReviewForm from '../Reviews/ReviewForm';
-import ReviewModal from '../Reviews/ReviewForm';
+import ReviewFormModal from '../Reviews/ReviewFormModal';
+import OpenModalButton from '../OpenModalButton';
 import './SpotDetails.css';
 
 function SpotDetails() {
@@ -12,7 +12,6 @@ function SpotDetails() {
   const [spot, setSpot] = useState(null);
   const sessionUser = useSelector(state => state.session.user);
   const navigate = useNavigate();
-  const [showReviewForm, setShowReviewForm] = useState(false);
 
 const fetchSpotAndReviews = async () => {
     try {
@@ -86,13 +85,16 @@ const showReviewButton = sessionUser && !userOwnsSpot && !userHasReviewed;
   </button>
 )}
       <ReviewList spotId={spot.id} />
-      {showReviewButton && (
-  <button onClick={() => setShowReviewForm(true)}>Post Your Review</button>
-)}
-{showReviewForm && (
-  <ReviewModal onClose={() => setShowReviewForm(false)}>
-    <ReviewForm spotId={spot.id} onClose={() => setShowReviewForm(false)} />
-  </ReviewModal>
+     {showReviewButton && (
+  <OpenModalButton
+  buttonText="Post Your Review"
+  modalComponent={
+    <ReviewFormModal
+      spotId={spot.id}
+      refresh={fetchSpotAndReviews}
+    />
+  }
+/>
 )}
     </div>
   );

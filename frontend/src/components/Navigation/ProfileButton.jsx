@@ -62,7 +62,7 @@ function ProfileButton({ user }) {
           closeMenu();
         }}
       >
-        My Spots
+        Manage Spots
       </button>
     </li>
     <li>

@@ -4,7 +4,7 @@ import { csrfFetch } from "./csrf";
 const LOAD_SPOTS = 'spots/LOAD_SPOTS';
 const ADD_SPOT = 'spots/ADD_SPOT';
 const UPDATE_SPOT = 'spots/UPDATE_SPOT';
-
+const DELETE_SPOT = 'spots/DELETE_SPOT';
 
 //these are the action creators: 
 const initialState = {
@@ -27,6 +27,10 @@ const loadSpots = (spots) => ({
     spot
   });
 
+  const removeSpot = (spotId) => ({
+    type: DELETE_SPOT,
+    spotId
+});
 
 
 
@@ -78,6 +82,20 @@ const loadSpots = (spots) => ({
   return image;
 };
 
+export const deleteSpot = (spotId) => async (dispatch) => {
+    const response = await csrfFetch(`/api/spots/${spotId}`, {
+        method: 'DELETE'
+    });
+
+    if (response.ok) {
+        dispatch(removeSpot(spotId));
+        return true;
+    } else {
+        const errorData = await response.json();
+        return { errors: errorData.errors || ['Failed to delete spot'] };
+    }
+};
+
 
 //this is the reducer
 export default function spotsReducer(state = initialState, action) {
@@ -105,6 +123,12 @@ export default function spotsReducer(state = initialState, action) {
           }
         };
       }
+
+      case DELETE_SPOT: {
+            const newState = { ...state };
+            delete newState.allSpots[action.spotId];
+            return newState;
+        }
   
       default:
         return state;

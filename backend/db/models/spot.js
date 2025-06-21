@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       // Many-to-one: A spot belongs to a user (owner)
       Spot.belongsTo(models.User, {
         foreignKey: 'ownerId',
+        as: 'Owner'
         // onDelete: 'CASCADE',  // Ensures when a user is deleted, their spot is also deleted
         // hooks: true
       });

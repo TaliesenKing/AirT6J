@@ -160,13 +160,16 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    console.log('Fetching spot with ID:', id);
-
     const spot = await Spot.findByPk(id, {
       include: [
         {
           model: SpotImage,
           attributes: ['id', 'url', 'preview']
+        },
+        {
+          model: User,
+          as: 'Owner', 
+          attributes: ['id', 'firstName', 'lastName']
         }
       ]
     });

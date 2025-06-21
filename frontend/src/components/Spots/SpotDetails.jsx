@@ -13,7 +13,7 @@ function SpotDetails() {
   const sessionUser = useSelector(state => state.session.user);
   const navigate = useNavigate();
 
-const fetchSpotAndReviews = async () => {
+  const fetchSpotAndReviews = async () => {
     try {
       const [spotRes, reviewsRes] = await Promise.all([
         fetch(`/api/spots/${spotId}`),
@@ -23,7 +23,6 @@ const fetchSpotAndReviews = async () => {
       if (spotRes.ok && reviewsRes.ok) {
         const spotData = await spotRes.json();
         const reviewsData = await reviewsRes.json();
-
         setSpot({ ...spotData, Reviews: reviewsData.Reviews });
       } else {
         console.error("Failed to fetch spot or reviews");
@@ -33,11 +32,9 @@ const fetchSpotAndReviews = async () => {
     }
   };
 
-
   useEffect(() => {
-  fetchSpotAndReviews();
-}, [spotId]);
-
+    fetchSpotAndReviews();
+  }, [spotId]);
 
   const handleDelete = async () => {
     const confirmDelete = window.confirm('Are you sure you want to delete this spot?');
@@ -56,46 +53,92 @@ const fetchSpotAndReviews = async () => {
     }
   };
 
-
+  const handleReserve = () => {
+    alert('Feature coming soon');
+  };
 
   if (!spot) return <h2>Loading spot details...</h2>;
 
   const userOwnsSpot = sessionUser && sessionUser.id === spot.ownerId;
-const userHasReviewed = sessionUser && spot.Reviews?.some(
-  (review) => review.userId === sessionUser.id
-);
+  const userHasReviewed = sessionUser && spot.Reviews?.some(
+    (review) => review.userId === sessionUser.id
+  );
+  const showReviewButton = sessionUser && !userOwnsSpot && !userHasReviewed;
 
-const showReviewButton = sessionUser && !userOwnsSpot && !userHasReviewed;
+  const previewImage = spot.SpotImages?.find(img => img.preview) || spot.SpotImages?.[0];
+  const otherImages = spot.SpotImages?.filter(img => !img.preview).slice(0, 4) || [];
 
   return (
-    <div>
-      <h1>{spot.name}</h1>
-      <p>{spot.city}, {spot.state}, {spot.country}</p>
-      <img src={spot.SpotImages?.[0]?.url} alt={spot.name} width="400" />
-      <p>Hosted by {spot.Owner?.firstName}, {spot.Owner?.lastName}</p>
-      <p>{spot.description}</p>
-      <p><strong>${spot.price}</strong> / night</p>
-      <p>
-  ★ {spot.avgStarRating || "New"} · {spot.Reviews?.length || 0} review{spot.Reviews?.length === 1 ? '' : 's'}
-</p>
-  
+    <div className="spot-details-container">
+      <div className="spot-header">
+        <h1>{spot.name}</h1>
+        <p className="location">Location: {spot.city}, {spot.state}, {spot.country}</p>
+      </div>
+      <div className="image-grid">
+        <div className="main-image-container">
+          <img 
+            src={previewImage?.url || 'https://via.placeholder.com/800x400'} 
+            alt={spot.name} 
+            className="main-image"
+          />
+        </div>
+        <div className="thumbnail-container">
+          {[0, 1, 2, 3].map((index) => (
+            <div key={index} className="thumbnail-wrapper">
+              {otherImages[index] ? (
+                <img 
+                  src={otherImages[index].url} 
+                  alt={`${spot.name} view ${index + 1}`}
+                  className="thumbnail"
+                />
+              ) : (
+                <div className="empty-thumbnail"></div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="content-wrapper">
+        <div className="spot-info">
+          <h2>Hosted by {spot.Owner?.firstName} {spot.Owner?.lastName}</h2>
+          <p className="description">{spot.description}</p>
+        </div>
+        <div className="reservation-box">
+          <div className="price-info">
+            <span className="price">${spot.price}</span>
+            <span className="per-night"> night</span>
+          </div>
+          <div className="rating-info">
+            ★ {spot.avgStarRating ? Number(spot.avgStarRating).toFixed(1) : 'New'}
+            {spot.Reviews?.length > 0 && (
+              <span> · {spot.Reviews.length} review{spot.Reviews.length !== 1 ? 's' : ''}</span>
+            )}
+          </div>
+          <button 
+            onClick={handleReserve}
+            className="reserve-button"
+          >
+            Reserve
+          </button>
+        </div>
+      </div>
       {sessionUser?.id === spot.ownerId && (
-  <button onClick={handleDelete} className="delete-spot-button">
-    Delete Spot
-  </button>
-)}
+        <button onClick={handleDelete} className="delete-spot-button">
+          Delete Spot
+        </button>
+      )}
       <ReviewList spotId={spot.id} />
-     {showReviewButton && (
-  <OpenModalButton
-  buttonText="Post Your Review"
-  modalComponent={
-    <ReviewFormModal
-      spotId={spot.id}
-      refresh={fetchSpotAndReviews}
-    />
-  }
-/>
-)}
+      {showReviewButton && (
+        <OpenModalButton
+          buttonText="Post Your Review"
+          modalComponent={
+            <ReviewFormModal
+              spotId={spot.id}
+              refresh={fetchSpotAndReviews}
+            />
+          }
+        />
+      )}
     </div>
   );
 }

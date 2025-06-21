@@ -1,3 +1,4 @@
+
 .modal-review-form {
   display: flex;
   flex-direction: column;
@@ -5,26 +6,32 @@
   width: 100%;
   max-width: 500px;
   padding: 20px;
+  box-sizing: border-box; 
 }
 
 .modal-review-form h2 {
   margin: 0 0 10px 0;
   text-align: center;
+  font-size: 1.5rem;
 }
 
 .review-textarea {
-  width: 100%;
+  width: calc(100% - 20px); 
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
   resize: vertical;
   min-height: 100px;
+  max-height: 200px; 
+  font-family: inherit; 
+  box-sizing: border-box; 
 }
 
 .star-rating-container {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin: 10px 0;
 }
 
 .star-rating {
@@ -46,6 +53,7 @@
 .stars-text {
   font-size: 14px;
   color: #666;
+  margin-left: 5px;
 }
 
 .submit-review-button {
@@ -57,6 +65,8 @@
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
+  width: 100%;
+  margin-top: 10px;
 }
 
 .submit-review-button:hover {
@@ -70,7 +80,31 @@
 
 .review-errors {
   color: #ff5a5f;
-  margin: 0;
+  margin: 0 0 10px 0;
   padding: 0;
   list-style: none;
+  font-size: 0.9rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
 }

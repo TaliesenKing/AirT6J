@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createReview, fetchSpotReviews } from '../../store/reviews';
-import './Reviews.css'; 
-
-
-
+import './Reviews.css';
 
 const ReviewForm = ({ spotId, onClose, refresh }) => {
   const dispatch = useDispatch();
@@ -14,40 +11,43 @@ const ReviewForm = ({ spotId, onClose, refresh }) => {
   const [errors, setErrors] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  
   const resetForm = () => {
-  setReview('');
-  setStars(0);
-  setErrors([]);
-  setHovered(0);
-};
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setErrors([]);
+    setReview('');
+    setStars(0);
+    setErrors([]);
+    setHovered(0);
+  };
 
-  try {
-    await dispatch(createReview(spotId, { review, stars }));
-    await dispatch(fetchSpotReviews(spotId));
-    await refresh();
-    resetForm(); 
-    onClose();      
-  } catch (res) {
-    const data = await res.json();
-    if (data?.errors) setErrors(Object.values(data.errors));
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrors([]);
+
+    try {
+      await dispatch(createReview(spotId, { review, stars }));
+      await dispatch(fetchSpotReviews(spotId));
+      await refresh();
+      resetForm();
+      onClose();
+    } catch (res) {
+      const data = await res.json();
+      if (data?.errors) setErrors(Object.values(data.errors));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const isDisabled = review.length < 10 || stars < 1;
 
   return (
-    <form onSubmit={handleSubmit} className="review-form">
+    <form onSubmit={handleSubmit} className="modal-review-form">
       <h2>How was your stay?</h2>
 
       {errors.length > 0 && (
         <ul className="review-errors">
-          {errors.map((err, idx) => <li key={idx}>{err}</li>)}
+          {errors.map((err, idx) => (
+            <li key={idx}>{err}</li>
+          ))}
         </ul>
       )}
 
@@ -59,35 +59,33 @@ const ReviewForm = ({ spotId, onClose, refresh }) => {
         className="review-textarea"
       />
 
-      <div className="star-rating">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <span
-            key={star}
-            className={`star ${star <= (hovered || stars) ? 'filled' : ''}`}
-            onClick={() => setStars(star)}
-            onMouseEnter={() => setHovered(star)}
-            onMouseLeave={() => setHovered(0)}
-            role="button"
-            aria-label={`${star} star`}
-          >
-            ★
-          </span>
-        ))}
-        <span> Stars</span>
+      <div className="star-rating-container">
+        <div className="star-rating">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <span
+              key={star}
+              className={`star ${star <= (hovered || stars) ? 'filled' : ''}`}
+              onClick={() => setStars(star)}
+              onMouseEnter={() => setHovered(star)}
+              onMouseLeave={() => setHovered(0)}
+              role="button"
+              tabIndex={0}
+              aria-label={`${star} star`}
+            >
+              ★
+            </span>
+          ))}
+        </div>
+        <span className="stars-text">{stars ? `${stars} star${stars !== 1 ? 's' : ''}` : 'Rate'}</span>
       </div>
 
-      <button type="submit" disabled={isDisabled || isSubmitting}>
-        Submit Your Review
-      </button>
       <button
-       type="button" onClick={() => {
-        resetForm(); 
-        onClose();
-  }}
-  className="cancel-button"
->
-  Cancel
-</button>
+        type="submit"
+        disabled={isDisabled || isSubmitting}
+        className="submit-review-button"
+      >
+        {isSubmitting ? 'Submitting...' : 'Submit Your Review'}
+      </button>
     </form>
   );
 };
